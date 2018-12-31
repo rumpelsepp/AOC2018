@@ -45,6 +45,21 @@ def claim_area(area, parsed_data):
     return overlap
 
 
+def is_fully_intact(area, parsed_data):
+    x_start = parsed_data["left"]
+    x_end = x_start + parsed_data["br"]
+    y_start = parsed_data["top"]
+    y_end = y_start + parsed_data["le"]
+
+    for y in range(y_start, y_end):
+        for x in range(x_start, x_end):
+            if area[y][x] != 1:
+                return False
+
+    return True
+
+
+
 def main():
     # I am too lazy to find out how large it actually is.
     area = []
@@ -54,11 +69,20 @@ def main():
 
     overlap_sum = 0
 
-    for line in sys.stdin:
-        data = parse(line)
-        overlap_sum += claim_area(area, data)
+    data = sys.stdin.read().splitlines()
+
+    # part 1
+    for line in data:
+        parsed_data = parse(line)
+        overlap_sum += claim_area(area, parsed_data)
 
     print(overlap_sum)
+
+    # part 2
+    for line in data:
+        parsed_data = parse(line)
+        if is_fully_intact(area, parsed_data):
+            print(line)
 
 
 if __name__ == '__main__':
