@@ -4,7 +4,6 @@ import re
 import sys
 from enum import Enum
 from datetime import datetime, timedelta
-from pprint import pprint
 
 
 class EventType(Enum):
@@ -77,13 +76,14 @@ class Shift:
 
     @property
     def time_asleep(self):
-        _sum = timedelta()
+        sum_ = timedelta()
         for e in self.asleep:
-            _sum += (e[1] - e[0])
-        return _sum
+            sum_ += (e[1] - e[0])
+        return sum_
 
     @property
-    def laziest_minute(self):
+    def minutes_freqs(self):
+        empty = True
         res = [0 for i in range(0, 60)]
         for e in self.asleep:
             a = e[0].minute
@@ -93,13 +93,23 @@ class Shift:
                 a, b = b, a
 
             for i in range(a, b):
+                if empty:
+                    empty = False
                 res[i] += 1
 
-        return res.index(max(res))
+        if empty:
+            return []
+        return res
+
+    @property
+    def laziest_minute(self):
+        freqs = self.minutes_freqs
+        if freqs:
+            return freqs.index(max(freqs))
+        return -1
 
     def __repr__(self):
         return f'#{self._id}: asleept for {self.time_asleep}'
-
 
 def main():
     events = []
@@ -130,14 +140,25 @@ def main():
         if event._id is None:
             event._id = cur_id
 
+    # part 1
     m = max(shifts, key=lambda x: shifts[x].time_asleep)
     print(shifts[m]._id, shifts[m].laziest_minute)
     print(shifts[m]._id * shifts[m].laziest_minute)
 
     # part 2
+    n = -1
+    id_ = -1
+    for s in shifts:
+        freqs = shifts[s].minutes_freqs
+        if not freqs:
+            continue
 
+        m = max(freqs)
+        if m > n:
+            id_ = s
+            n = m
 
-    pprint(shifts)
+    print(id_ * shifts[id_].minutes_freqs.index(n))
 
 
 if __name__ == '__main__':
