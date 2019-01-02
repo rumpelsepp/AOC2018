@@ -2,10 +2,12 @@
 
 import sys
 
+# part 1
 twos = 0
 threes = 0
+lines = sys.stdin.read().split()
 
-for line in sys.stdin:
+for line in lines:
     chars = {}
     line = line.strip()
     got_twos = False
@@ -26,3 +28,21 @@ for line in sys.stdin:
             got_threes = True
 
 print(twos * threes)
+
+# part 2
+for line in lines:
+    for candidate in lines:
+        differ = 0
+        for a, b in zip(candidate, line):
+            if a != b:
+                differ += 1
+
+        if differ == 1:
+            answer = ""
+            for a, b in zip(candidate, line):
+                if a == b:
+                    answer += a
+
+            print(answer)
+
+            sys.exit()
